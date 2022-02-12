@@ -1,0 +1,6 @@
+meta.name: DeaDBeeF (IPC)
+meta.author: Robin Ekman
+meta.description: DeaDBeeF remote control via IPC.
+meta.url: https://github.com/rsekman/ur-ddb-ipc
+meta.platform: linux
+meta.tags.category: media
