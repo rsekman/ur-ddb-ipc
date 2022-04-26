@@ -3,40 +3,59 @@
   <tabs>
     <tab text="Player">
       <grid>
-        <row>
-          <label id="info" />
+        <row weight="0">
+          <toggle id="onoff" weight="0" color="gray" icon="off" onChange="onoff" />
+          <text id="input_ipc_server" hint="Input IPC server" text="" onDone="update_ipc" />
         </row>
-        <row>
-          <button icon="vdown" onTap="volume_down" />
-          <button icon="vmute" onTap="volume_mute" />
-          <button icon="vup" onTap="volume_up" />
+        <row id="title_row">
+          <label id="media_title" text="[Not Playing]" />
         </row>
-        <row>
-          <button icon="previous" onTap="previous" />
-          <button icon="playpause" onTap="play_pause" />
-          <button icon="next" onTap="next" />
+        <row weight="1">
+          <slider id="seek_slider" progress="50" progressmax="100" onChange="seek" />
         </row>
-        <row>
-          <button icon="rwd" ontap="rewind" />
+        <row weight="2" id="playback_control">
           <button icon="stop" onTap="stop" />
-          <button icon="ff" ontap="forward" />
+          <button icon="playpause" onTap="play_pause" />
+        </row>
+        <row id="navigation">
+          <button icon="docleft" onTap="previousAlbum" />
+          <button icon="previous" onTap="previous" />
+          <button icon="next" onTap="next" />
+          <button icon="docright" onTap="nextAlbum" />
+        </row>
+        <row id="volume_control_row" weight="wrap">
+          <button weight="1" image="res/icons/vmuted.png" onTap="volume_mute" />
+          <button weight="1" icon="vdown" onTap="volume_down" />
+          <slider weight="7" id="volume_slider" progress="50" progressmax="100" onChange="volume_set" />
+          <button weight="1" icon="vup" onTap="volume_up" />
+        </row>
+        <row weight="wrap">
+          <label color="hard" text="Playback control" />
+        </row>
+        <row weight="wrap">
+          <label weight="10" color="hard" text="Repeat" />
+          <space />
+          <label weight="10" color="hard" text="Shuffle" />
+        </row>
+        <row weight="4" id = "sub_row">
+          <list weight="10" id="repeat_list" onTap="set_repeat_id">
+            <item text="None" />
+            <item text="Track" />
+            <item text="Album" />
+            <item text="Playlist" />
+          </list>
+          <space />
+          <list weight="10" id="shuffle_list" onTap="set_sub_id">
+            <item text="None" />
+            <item text="Track" />
+            <item text="Album" />
+          </list>
+        </row>
+        <row id="stop_after_row">
+          <toggle text="Stop after current track" checked="false" onchange="toggle_stop_after_current_track" />
+          <toggle text="Stop after current album" checked="false" onchange="toggle_stop_after_current_album" />
         </row>
       </grid>
-    </tab>
-    <tab text="Playback order">
-      <row weight="1">
-        <button text="Default" onTap="orderDefault" />
-        <button text="Random" onTap="orderRandom" />
-      </row>
-      <row weight="1">
-        <button text="Repeat (playlist)" onTap="orderRepeatPlaylist" />
-        <button text="Repeat (track)" onTap="orderRepeatTrack" />
-      </row>
-      <row weight="1">
-        <button text="Shuffle (albums)" onTap="orderShuffleAlbums" />
-        <button text="Shuffle (folders)" onTap="orderShuffleFolders" />
-        <button text="Shuffle (tracks)" onTap="orderShuffleTracks" />
-      </row>
     </tab>
   </tabs>
 </layout>
