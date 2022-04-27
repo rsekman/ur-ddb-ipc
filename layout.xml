@@ -11,7 +11,7 @@
           <label id="media_title" text="[Not Playing]" />
         </row>
         <row weight="1">
-          <slider id="seek_slider" progress="50" progressmax="100" onChange="seek" />
+          <slider id="seek_slider" progress="50" progressmax="100" onChange="seek_percent" />
         </row>
         <row weight="2" id="playback_control">
           <button icon="stop" onTap="stop" />

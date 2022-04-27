@@ -1,1 +1,1 @@
-input_ipc_server: /tmp/deadbeef-socket
+input_ipc_server: /tmp/ddb_socket

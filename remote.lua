@@ -82,6 +82,11 @@ local function connect(path)
   requests = {}
   next_request_id = 1
   listeners = {
+    ["property-change"] = function (tbl)
+      if tbl.property and observers[tbl.property] then
+        observers[tbl.property](tbl)
+      end
+    end
   }
   observers = {}
 
@@ -128,7 +133,10 @@ local function send_with_callback(callback, command, ...)
     return false
   end
 
-  local message = { command = command, args = { ... } }
+  local message = { command = command}
+  if ... then
+    message.args = ...
+  end
   if callback then
     requests[next_request_id] = callback
     message.request_id = next_request_id
@@ -190,17 +198,57 @@ end
 -- Observe a property
 local function observe_property(name, callback)
   observers[name] = callback
-  send("observe_property", 1, name)
+  send("observe-property", 1, name)
 end
 
 ----------------------------------------------------------
 -- UI handlers
 ----------------------------------------------------------
 
+-- Update the seekbar
+local function ui_seek(message)
+  if message.data then
+    local pos = 100 * message.data.position/message.data.duration
+    layout.seek_slider.progress = string.format("%2.0f", pos)
+  end
+end
+
+-- Update the volume bar
+local function ui_update_volume(message)
+  if message.value then
+    layout.volume_slider.progress = string.format("%2.0f", message.value)
+  end
+end
+
+local function ui_update_mute(message)
+  if message.data == 0 then
+    layout.volume_slider.color = "green"
+  else
+    layout.volume_slider.color = "red"
+  end
+end
+
+-- Set the title
+local function ui_set_title(message)
+  if message.data then
+    layout.media_title.text = message.data
+  end
+  server.update( {"id = media-title", weight = "wrap" } )
+end
 
 -- Initialize the UI to reflect the current state
 local function initialize_ui()
-    return nil
+  send_with_callback(ui_update_volume, "get-property",{ property = "volume" })
+  observe_property("volume", ui_update_volume)
+  send_with_callback(ui_seek, "get-playpos")
+  -- poll ddb for progress regularly
+  local playpos_freq = 50 -- ms
+  libs.timer.interval(
+    function() send_with_callback(ui_seek, "get-playpos") end,
+    playpos_freq
+  )
+  listeners["seek"] = ui_seek
+  return nil
 end
 
 
@@ -238,7 +286,7 @@ local handle_response = function()
         local tbl = data.fromjson(msg)
         if tbl.error and tbl.error ~= "success" then
           device.toast("Command failed")
-          log.warn("Error from ddb: "..msg)
+          log.warn("Error from ddb: " .. msg)
         end
         -- If the message contains a request ID, it is a response to our command.
         if tbl.request_id and requests[tbl.request_id] then
@@ -318,4 +366,29 @@ end
 --@help Toggle play/pause state
 actions.play_pause = function()
   send("play-pause")
+end
+
+--@help Lower volume
+actions.volume_down = function()
+  send("adjust-volume", { adjustment = -2} )
+end
+
+--@help Mute volume
+actions.volume_mute = function()
+  send("toggle-mute")
+end
+
+--@help Raise volume
+actions.volume_up = function()
+  send("adjust-volume", { adjustment = 2} )
+end
+
+--@help Set volume
+actions.volume_set = function(value)
+  send("set-volume", { volume = tonumber(value) } )
+end
+
+--@help Seek by percent
+actions.seek_percent = function(value)
+  send("seek", { percent = value} )
 end
