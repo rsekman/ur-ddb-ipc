@@ -123,12 +123,12 @@ local function connect(path)
 end
 
 -- Send a command to ddb, registering a callback to handle any responses
-local function send_with_callback(callback, ...)
+local function send_with_callback(callback, command, ...)
   if not fd then
     return false
   end
 
-  local message = { command = { ...} }
+  local message = { command = command, args = { ... } }
   if callback then
     requests[next_request_id] = callback
     message.request_id = next_request_id
@@ -303,4 +303,19 @@ actions.update_ipc = function(path)
   settings.input_ipc_server = path
   disconnect()
   connect()
+end
+
+--@help Previous track
+actions.previous = function()
+  send("playlist-prev")
+end
+
+--@help Next track
+actions.next = function()
+  send("playlist-next")
+end
+--
+--@help Toggle play/pause state
+actions.play_pause = function()
+  send("play-pause")
 end
