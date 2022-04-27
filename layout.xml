@@ -33,27 +33,35 @@
           <label color="hard" text="Playback control" />
         </row>
         <row weight="wrap">
-          <label weight="10" color="hard" text="Repeat" />
+          <label weight="5" color="hard" text="Repeat" />
           <space />
-          <label weight="10" color="hard" text="Shuffle" />
+          <label weight="5" color="hard" text="Shuffle" />
+          <space />
+          <label weight="7" color="hard" text="Stop after" />
         </row>
         <row weight="4" id = "sub_row">
-          <list weight="10" id="repeat_list" onTap="set_repeat_id">
-            <item text="None" />
-            <item text="Track" />
-            <item text="Album" />
-            <item text="Playlist" />
+          <list weight="5" id="repeat_list" onTap="set_repeat">
+            <item text="Off" />
+            <item text="One" />
+            <item text="All" />
           </list>
           <space />
-          <list weight="10" id="shuffle_list" onTap="set_sub_id">
-            <item text="None" />
-            <item text="Track" />
-            <item text="Album" />
+          <list weight="5" id="shuffle_list" onTap="set_shuffle">
+            <item text="Off" />
+            <item text="Tracks" />
+            <item text="Albums" />
+            <item text="Random" />
           </list>
-        </row>
-        <row id="stop_after_row">
-          <toggle text="Stop after current track" checked="false" onchange="toggle_stop_after_current_track" />
-          <toggle text="Stop after current album" checked="false" onchange="toggle_stop_after_current_album" />
+          <space />
+          <grid weight="7">
+            <row weight="wrap">
+              <toggle text="Current track" checked="false" onchange="toggle_stop_after_current_track" />
+            </row>
+            <row weight="wrap">
+              <toggle text="Current album" checked="false" onchange="toggle_stop_after_current_album" />
+            </row>
+            <row> <space /> </row>
+          </grid>
         </row>
       </grid>
     </tab>
