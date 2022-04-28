@@ -161,7 +161,7 @@ local function read()
   end
 
   local out = ""
-  local buf = ffi.new("char[255]")
+  local buf = ffi.new("char[4096]")
   local pollfds = ffi.new("pollfd[1]")
   pollfds[0].fd = fd
   pollfds[0].events = POLLIN
@@ -170,7 +170,7 @@ local function read()
     return nil
   end
   repeat
-    local ret = ffi.C.read(fd, buf, 255)
+    local ret = ffi.C.read(fd, buf, 4096)
     if ret < 0 then
       if ffi.errno() == EAGAIN then
         break
@@ -198,7 +198,7 @@ end
 -- Observe a property
 local function observe_property(name, callback)
   observers[name] = callback
-  send("observe-property", 1, name)
+  send("observe-property", { property = name } )
 end
 
 ----------------------------------------------------------
@@ -220,8 +220,9 @@ local function ui_update_volume(message)
   end
 end
 
+-- Update mute status
 local function ui_update_mute(message)
-  if message.data == 0 then
+  if message.value == 0 then
     layout.volume_slider.color = "green"
   else
     layout.volume_slider.color = "red"
@@ -236,18 +237,85 @@ local function ui_set_title(message)
   server.update( {"id = media-title", weight = "wrap" } )
 end
 
+-- Update the stop after buttons
+local function ui_update_stop_after_current_track(message)
+  if message.value and message.value ~= 0 then
+    layout.stop_after_current_track.checked = true
+  else
+    layout.stop_after_current_track.checked = false
+  end
+  server.update()
+end
+
+local function ui_update_stop_after_current_album(message)
+  if message.value and message.value ~= 0 then
+      layout.stop_after_current_album.checked = true
+  else
+      layout.stop_after_current_album.checked = false
+  end
+  server.update()
+end
+
+local repeats  = {"Off", "One", "All"}
+local function ui_update_repeats(message)
+  log.warn("repeat: " .. message.value)
+  local repeat_children = {}
+  for k, v in ipairs(repeats) do
+    local bool = (message.value == string.lower(v))
+    local item =     {
+      type = "item",
+      checked = bool,
+      text = v,
+    }
+    table.insert(repeat_children, item)
+  end
+  server.update( {id = "repeat_list", children = repeat_children} )
+end
+
+local shuffles = {"Off", "Tracks", "Albums", "Random"}
+local function ui_update_shuffles(message)
+  log.warn("shuffle: " .. message.value)
+  local shuffle_children = {}
+  for k, v in ipairs(shuffles) do
+    local bool = (message.value == string.lower(v))
+    local item =     {
+      type = "item",
+      checked = bool,
+      text = v,
+    }
+    table.insert(shuffle_children, item)
+  end
+  server.update( {id = "shuffle_list", children = shuffle_children} )
+end
+
 -- Initialize the UI to reflect the current state
 local function initialize_ui()
-  send_with_callback(ui_update_volume, "get-property",{ property = "volume" })
+  send_with_callback(ui_update_volume, "get-property", { property = "volume" })
   observe_property("volume", ui_update_volume)
+
+  send_with_callback(ui_update_mute, "get-property", { property = "mute" })
+  observe_property("mute", ui_update_mute)
+
   send_with_callback(ui_seek, "get-playpos")
+
   -- poll ddb for progress regularly
-  local playpos_freq = 50 -- ms
+  local playpos_freq = 3600 * 1000 -- ms
   libs.timer.interval(
     function() send_with_callback(ui_seek, "get-playpos") end,
     playpos_freq
   )
   listeners["seek"] = ui_seek
+
+  send_with_callback(ui_update_repeats, "get-property", {property = "repeat"} )
+  send_with_callback(ui_update_shuffles, "get-property", {property = "shuffle"} )
+  observe_property("repeat", ui_update_repeats)
+  observe_property("shuffle", ui_update_shuffles)
+
+  send_with_callback(ui_update_stop_after_current_track, "get-property", { property = "playlist.stop_after_current" })
+  send_with_callback(ui_update_stop_after_current_album, "get-property", { property = "playlist.stop_after_album" })
+  observe_property("playlist.stop_after_current", ui_update_stop_after_current_track)
+  observe_property("playlist.stop_after_album", ui_update_stop_after_current_album)
+
   return nil
 end
 
@@ -342,6 +410,7 @@ actions.onoff = function()
     disconnect()
   else
     connect()
+    initialize_ui()
   end
 end
 
@@ -391,4 +460,36 @@ end
 --@help Seek by percent
 actions.seek_percent = function(value)
   send("seek", { percent = value} )
+end
+
+--@help Toggle Stop after current track
+actions.toggle_stop_after_current_track = function()
+  send("toggle-stop-after-current-track")
+end
+
+--@help Toggle Stop after current album
+actions.toggle_stop_after_current_album = function()
+  send("toggle-stop-after-current-album")
+end
+
+actions.set_repeat = function(index)
+  local rep = string.lower(repeats[index+1])
+  log.warn("Setting repeat " .. rep)
+  send("set-property",
+    {
+      property = "repeat",
+      value = rep
+    }
+  )
+end
+
+actions.set_shuffle = function(index)
+  local shuff = string.lower(shuffles[index+1])
+  log.warn("Setting shuffle " .. shuff)
+  send("set-property",
+    {
+      property = "shuffle",
+      value = shuff
+    }
+  )
 end
