@@ -30,6 +30,7 @@
                 <button weight="1" icon="vup" onTap="volume_up" />
             </row>
         </grid>
+    </tab>
     <tab text="Playback control">
         <grid>
             <row weight="wrap">
