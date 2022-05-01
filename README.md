@@ -14,4 +14,4 @@ Requires the [`ddb_ipc`](https://github.com/rsekman/ddb_ipc) plugin and suitable
 6. Open the remote on your other device. It should try to connect automatically when started, and when trying to send a
    command.
 
-IPC requires the server and client to agree on a socket path. The default both here and in `ddb_ipc` is `/tmp/deadbeef-socket`. If you should need to change this, make sure you change both configurations!
+IPC requires the server and client to agree on a socket path. The default both here and in `ddb_ipc` is `/tmp/ddb_socket`. If you should need to change this, make sure you change both configurations!
