@@ -315,7 +315,7 @@ local function initialize_ui()
   send_with_callback(ui_seek, "get-playpos")
 
   -- poll ddb for progress regularly
-  local playpos_freq = 3600 * 1000 -- ms
+  local playpos_freq = 100 -- ms
   libs.timer.interval(
     function() send_with_callback(ui_seek, "get-playpos") end,
     playpos_freq
