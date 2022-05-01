@@ -272,6 +272,16 @@ local function ui_update_repeats(message)
   server.update( {id = "repeat_list", children = repeat_children} )
 end
 
+local function ui_update_cover_art(message)
+    if not message["cover-art-blob"] then
+        log.warn("cover art: no blob provided")
+        return
+    end
+    tmpf = fs.temp()
+    fs.write(tmpf, data.frombase64(message["cover-art-blob"]))
+    server.update( {id = "cover_art", image=tmpf} )
+end
+
 local shuffles = {"Off", "Tracks", "Albums", "Random"}
 local function ui_update_shuffles(message)
   log.warn("shuffle: " .. message.value)
@@ -315,6 +325,8 @@ local function initialize_ui()
   send_with_callback(ui_update_stop_after_current_album, "get-property", { property = "playlist.stop_after_album" })
   observe_property("playlist.stop_after_current", ui_update_stop_after_current_track)
   observe_property("playlist.stop_after_album", ui_update_stop_after_current_album)
+
+  send_with_callback(ui_update_cover_art, "request-cover-art")
 
   return nil
 end
