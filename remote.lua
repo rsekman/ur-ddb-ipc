@@ -333,6 +333,9 @@ local function initialize_ui()
   observe_property("playlist.stop_after_album", ui_update_stop_after_current_album)
 
   send_with_callback(ui_update_cover_art, "request-cover-art")
+  listeners["track-changed"] = function (message)
+    send_with_callback(ui_update_cover_art, "request-cover-art")
+  end
 
   return nil
 end
