@@ -21,10 +21,10 @@
                 <button icon="playpause" onTap="play_pause" />
             </row>
             <row id="navigation">
-                <button icon="docleft" onTap="previousAlbum" />
+                <button icon="docleft" onTap="previous_album" />
                 <button icon="previous" onTap="previous" />
                 <button icon="next" onTap="next" />
-                <button icon="docright" onTap="nextAlbum" />
+                <button icon="docright" onTap="next_album" />
             </row>
             <row id="volume_control_row" weight="wrap">
                 <button weight="1" image="res/icons/vmuted.png" onTap="volume_mute" />

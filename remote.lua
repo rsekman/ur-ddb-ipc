@@ -445,14 +445,24 @@ end
 
 --@help Previous track
 actions.previous = function()
-  send("playlist-prev")
+  send("prev-track")
 end
 
 --@help Next track
 actions.next = function()
-  send("playlist-next")
+  send("next-track")
 end
---
+
+--@help Previous album
+actions.previous_album = function()
+  send("prev-album")
+end
+
+--@help Next album
+actions.next_album = function()
+  send("next-album")
+end
+
 --@help Toggle play/pause state
 actions.play_pause = function()
   send("play-pause")
@@ -480,7 +490,7 @@ end
 
 --@help Seek by percent
 actions.seek_percent = function(value)
-  send("seek", { percent = value} )
+  send("seek", { percent = value/100} )
 end
 
 --@help Toggle Stop after current track
