@@ -496,7 +496,7 @@ end
 
 --@help Seek by percent
 actions.seek_percent = function(value)
-  send("seek", { percent = value/100} )
+  send("seek", { percent = value} )
 end
 
 --@help Toggle Stop after current track
