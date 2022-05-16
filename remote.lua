@@ -319,6 +319,8 @@ local function initialize_ui()
 
   -- poll ddb for progress regularly
   local playpos_freq = 100 -- ms
+  -- uncomment to poll less frequently -- prevents spamming the debug log
+  -- local playpos_freq = 1000 * 100 -- ms
   libs.timer.interval(
     function() send_with_callback(ui_seek, "get-playpos") end,
     playpos_freq
