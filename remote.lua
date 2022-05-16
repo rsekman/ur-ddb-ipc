@@ -231,8 +231,8 @@ end
 
 -- Set the title
 local function ui_set_title(message)
-  if message.data then
-    layout.media_title.text = message.data
+  if message["now-playing"] then
+    layout.media_title.text = message["now-playing"]
   end
   server.update( {"id = media-title", weight = "wrap" } )
 end
@@ -306,6 +306,9 @@ end
 
 -- Initialize the UI to reflect the current state
 local function initialize_ui()
+  fmt = "%artist% - '['%album% - #%tracknumber%']' %title%"
+  send_with_callback(ui_set_title, "get-now-playing", { format = fmt })
+
   send_with_callback(ui_update_volume, "get-property", { property = "volume" })
   observe_property("volume", ui_update_volume)
 
@@ -335,6 +338,7 @@ local function initialize_ui()
   send_with_callback(ui_update_cover_art, "request-cover-art")
   listeners["track-changed"] = function (message)
     send_with_callback(ui_update_cover_art, "request-cover-art")
+    send_with_callback(ui_set_title, "get-now-playing", { format = fmt })
   end
 
   return nil
