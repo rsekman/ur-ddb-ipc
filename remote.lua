@@ -273,17 +273,17 @@ local function ui_update_repeats(message)
 end
 
 local function ui_update_cover_art(message)
-    if not message["cover-art-blob"] and not message["cover-art-filename"] then
+    if not message["blob"] and not message["filename"] then
       return
     end
     tmpf = fs.temp()
-    if message["cover-art-blob"] then
-      log.warn("writing cover from blob")
-      fs.write(tmpf, data.frombase64(message["cover-art-blob"]))
+    if message["blob"] then
+      log.info("writing cover from blob")
+      fs.write(tmpf, data.frombase64(message["blob"]))
     end
-    if message["cover-art-filename"] then
+    if message["filename"] then
       log.warn("copying cover from file")
-      fs.copy(message["cover-art-filename"], tmpf)
+      fs.copy(message["filename"], tmpf)
     end
     server.update( {id = "cover_art", image=tmpf} )
 end
