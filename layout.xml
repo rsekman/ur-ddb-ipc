@@ -10,7 +10,7 @@
             <row weight="wrap" id="cover_art_row">
                 <image id="cover_art" image="res/images/cover_placeholder.png" />
             </row>
-            <row id="title_row">
+            <row id="title_row" weight="2">
                 <label id="media_title" text="[Not Playing]" />
             </row>
             <row weight="1">
