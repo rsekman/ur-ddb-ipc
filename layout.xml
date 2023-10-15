@@ -60,10 +60,10 @@
                     <row>
                         <toggle text="Current album" id="stop_after_current_album" checked="false" color="normal:gray; active: green;" ontap="toggle_stop_after_current_album" />
                     </row>
-                    </grid>
-                </row>
-                <row weight="2"> <space /> </row>
-            </grid>
-        </tab>
+                </grid>
+            </row>
+            <row weight="2"> <space /> </row>
+        </grid>
+    </tab>
   </tabs>
 </layout>
