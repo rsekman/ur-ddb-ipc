@@ -346,9 +346,9 @@ local function initialize_ui()
   observe_property("playlist.stop_after_current", ui_update_stop_after_current_track)
   observe_property("playlist.stop_after_album", ui_update_stop_after_current_album)
 
-  send_with_callback(ui_update_cover_art, "request-cover-art")
+  send_with_callback(ui_update_cover_art, "request-cover-art", { accept = {"filename", "blob"} } )
   listeners["track-changed"] = function (message)
-    send_with_callback(ui_update_cover_art, "request-cover-art")
+    send_with_callback(ui_update_cover_art, "request-cover-art", { accept = {"filename", "blob"} })
     send_with_callback(ui_set_title, "get-now-playing", { format = fmt })
   end
 
