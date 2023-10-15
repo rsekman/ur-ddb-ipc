@@ -214,7 +214,7 @@ local function ui_seek(message)
     local d_s = math.floor(message.data.duration) % 60
     local p_min = math.floor(message.data.position/60)
     local p_s = math.floor(message.data.position) % 60
-    layout.seek_slider.text = string.format("%d:%02d / %d:%02d", d_min, d_s, p_min, p_s)
+    layout.seek_slider.text = string.format("%d:%02d / %d:%02d", p_min, p_s, d_min, d_s)
   end
 end
 
