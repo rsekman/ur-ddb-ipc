@@ -210,6 +210,11 @@ local function ui_seek(message)
   if message.data then
     local pos = 100 * message.data.position/message.data.duration
     layout.seek_slider.progress = string.format("%2.0f", pos)
+    local d_min = math.floor(message.data.duration/60)
+    local d_s = math.floor(message.data.duration) % 60
+    local p_min = math.floor(message.data.position/60)
+    local p_s = math.floor(message.data.position) % 60
+    layout.seek_slider.text = string.format("%d:%02d / %d:%02d", d_min, d_s, p_min, p_s)
   end
 end
 
