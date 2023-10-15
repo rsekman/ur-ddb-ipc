@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <layout onLaunch="launch" onVolumeUp="volume_up" onVolumeDown="volume_down" onResume="play_pause" onPause="play_pause">
-  <tabs>
+  <tabs onchange="on_tab_changed">
     <tab text="Player">
         <grid>
             <row weight="0">
@@ -33,6 +33,20 @@
                 <button weight="1" icon="vup" onTap="volume_up" />
             </row>
         </grid>
+    </tab>
+    <tab text="Playlists">
+        <row weight="wrap">
+            <button weight="1" icon="left" onTap="playlist_prev" />
+            <label weight="8" id="playlist_title" />
+            <button weight="1" icon="right" onTap="playlist_next" />
+        </row>
+        <row weight="wrap">
+            <text id="input_search" hint="Search" text="" onDone="update_search" />
+        </row>
+        <row>
+            <list id="track_list" onTap="play_track">
+            </list>
+        </row>
     </tab>
     <tab text="Playback control">
         <grid>

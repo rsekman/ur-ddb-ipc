@@ -313,6 +313,32 @@ local function ui_update_shuffles(message)
   server.update( {id = "shuffle_list", children = shuffle_children} )
 end
 
+local function ui_populate_playlist(message)
+  if message.items == nil then
+    return nil
+  end
+  local make_item = function (data)
+      return { type = "item", checked = false , text = data }
+  end
+  local items = {}
+  for n, i in ipairs(message.items) do
+    local t = make_item(i)
+    t.ontap = function (index)
+      send("play-track-by-idx", { idx = n } )
+    end
+    table.insert(items, t)
+  end
+  server.update( {id = "track_list", children = items} )
+end
+
+local function ui_set_playlist_title(message)
+  if message.title == nil then
+    return
+  end
+  settings.plt_idx = message.idx
+  server.update( {id = "playlist_title", text = message.title} )
+end
+
 -- Initialize the UI to reflect the current state
 local function initialize_ui()
   fmt = "%artist% - '['%album% - #%tracknumber%']' %title%"
@@ -350,6 +376,13 @@ local function initialize_ui()
   listeners["track-changed"] = function (message)
     send_with_callback(ui_update_cover_art, "request-cover-art", { accept = {"filename", "blob"} })
     send_with_callback(ui_set_title, "get-now-playing", { format = fmt })
+  end
+
+  send_with_callback(ui_set_playlist_title, "get-current-playlist")
+  listeners["playlist-switched"] = function (message)
+    settings.plt_idx = message.idx
+    send_with_callback(ui_set_playlist_title, "get-current-playlist")
+    send_with_callback(ui_populate_playlist, "get-playlist-contents", { idx = tonumber(settings.plt_idx) })
   end
 
   return nil
@@ -450,6 +483,15 @@ actions.onoff = function()
   end
 end
 
+--@help Changing to the playlist tab requests playlist contents from server
+actions.on_tab_changed = function (index)
+  log.warn(index)
+  if index == 1 then
+    send_with_callback(ui_populate_playlist, "get-playlist-contents", { idx = tonumber(settings.plt_idx) })
+  end
+end
+
+
 --@help Set the input IPC server path.
 --@param path:string IPC serevr path
 actions.update_ipc = function(path)
@@ -538,4 +580,24 @@ actions.set_shuffle = function(index)
       value = shuff
     }
   )
+end
+
+local function shift_playlist(by)
+  local idx = settings.plt_idx + by
+  if idx < 0 then
+    return
+  end
+  send("set-current-playlist", { idx = idx })
+end
+
+actions.playlist_prev = function()
+  shift_playlist(-1)
+end
+
+actions.playlist_next = function()
+  shift_playlist(1)
+end
+
+actions.play_track = function(index)
+  send("play-num", { idx = index })
 end
