@@ -246,8 +246,10 @@ end
 local function ui_update_stop_after_current_track(message)
   if message.value and message.value ~= 0 then
     layout.stop_after_current_track.checked = true
+    layout.stop_after_current_track.color = "green"
   else
     layout.stop_after_current_track.checked = false
+    layout.stop_after_current_track.color = "gray"
   end
   server.update()
 end
@@ -255,8 +257,10 @@ end
 local function ui_update_stop_after_current_album(message)
   if message.value and message.value ~= 0 then
       layout.stop_after_current_album.checked = true
+      layout.stop_after_current_album.color = "green"
   else
       layout.stop_after_current_album.checked = false
+      layout.stop_after_current_album.color = "gray"
   end
   server.update()
 end
